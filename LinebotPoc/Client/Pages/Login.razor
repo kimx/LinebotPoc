@@ -1,0 +1,85 @@
+﻿@page "/Login/{linkToken?}"
+@using LinebotPoc.Client.Providers;
+@using LinebotPoc.Shared.Users;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using System.Text.Json;
+
+@if (LoginFail)
+{
+    <div class="alert alert-danger" role="alert">
+        Wrong Login or Password
+    </div>
+}
+@if (ShowBind)
+{
+    <a href="@BindUrl" class="btn btn-primary">點擊完成帳號綁定</a>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-3 offset-md-1">
+            <EditForm Model="@Model" OnValidSubmit="@UserLogin">
+                <DataAnnotationsValidator />
+                <legend>User Login</legend>
+                <div class="mb-3">
+                    <label for="txtLoginId" class="form-label">Login Email</label>
+                    <InputText id="txtLoginId" @bind-Value="Model.UserEmail" class="form-control" />
+
+                    <ValidationMessage For="() => Model.UserEmail" />
+                </div>
+
+                <button type="submit" class="btn btn-primary">Login</button>
+                <a href="/Register/@LinkToken" class="btn btn-secondary float-end">Register</a>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string LinkToken { get; set; }
+
+    bool LoginFail = false;
+    bool ShowBind = false;
+    string BindUrl = "";
+    [Inject]
+    AuthenticationStateProvider _authStateProvider { get; set; }
+    [Inject]
+    NavigationManager _navigationManager { get; set; }
+
+    [Inject]
+    HttpClient httpClient { get; set; }
+
+    private LoginDto Model = new LoginDto();
+    private async Task UserLogin()
+    {
+
+        var response = await httpClient.PostAsJsonAsync("api/user/login", Model);
+        if (!response.IsSuccessStatusCode)
+        {
+            LoginFail = true;
+            return;
+        }
+        string json = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<DummyUserDto>(json);
+        (_authStateProvider as CustomAuthStateProvider).SetAuthInfo(result);
+        if (string.IsNullOrEmpty(LinkToken))
+        {
+            _navigationManager.NavigateTo("/", true);
+
+        }
+        else
+        {
+            ShowBind = true;
+            var nonce = Guid.NewGuid().ToString();
+            result.LineNonce = nonce;
+            await httpClient.PostAsJsonAsync("api/user/update", result);
+            BindUrl = $"https://access.line.me/dialog/bot/accountLink?linkToken={LinkToken}&nonce={nonce}";
+        }
+
+
+
+    }
+
+
+}

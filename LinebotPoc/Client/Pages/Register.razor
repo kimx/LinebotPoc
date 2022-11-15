@@ -1,0 +1,64 @@
+﻿@page "/Register/{linkToken?}"
+@using LinebotPoc.Client.Providers;
+@using LinebotPoc.Shared.Users;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using System.Text.Json;
+
+@if (RegisterFail)
+{
+    <div class="alert alert-danger" role="alert">
+        使用者已存在
+    </div>
+}
+<div class="row">
+    <div class="col-md-3 offset-md-1">
+        <EditForm Model="@Model" OnValidSubmit="@UserRegister">
+            <DataAnnotationsValidator />
+            <legend>User Register</legend>
+            <div class="mb-3">
+                <label for="txtLoginId" class="form-label">Login Email</label>
+                <InputText id="txtLoginId" @bind-Value="Model.UserEmail" class="form-control" />
+
+                <ValidationMessage For="() => Model.UserEmail" />
+            </div>
+
+            <div class="mb-3">
+                <label for="txtLoginId" class="form-label">User Name</label>
+                <InputText id="txtLoginId" @bind-Value="Model.UserName" class="form-control" />
+
+                <ValidationMessage For="() => Model.UserEmail" />
+            </div>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </EditForm>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public string LinkToken { get; set; }
+
+    bool RegisterFail = false;
+    [Inject]
+    AuthenticationStateProvider _authStateProvider { get; set; }
+    [Inject]
+    NavigationManager _navigationManager { get; set; }
+
+    [Inject]
+    HttpClient httpClient { get; set; }
+
+    private DummyUserDto Model = new DummyUserDto();
+    private async Task UserRegister()
+    {
+        var response = await httpClient.PostAsJsonAsync("api/user/add", Model);
+        if (!response.IsSuccessStatusCode)
+        {
+            RegisterFail = true;
+            return;
+        }
+        _navigationManager.NavigateTo($"/login/{LinkToken}", true);
+
+
+
+    }
+
+
+}

@@ -1,0 +1,137 @@
+﻿@page "/admin"
+@using LinebotPoc.Shared.Dtos;
+@using LinebotPoc.Shared.Users;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
+@using LinebotPoc.Shared
+@inject HttpClient Http
+
+<PageTitle>使用者清單</PageTitle>
+<h1>使用者清單</h1>
+
+@if (Users == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p>
+        <button class="btn btn-primary" @onclick="()=>SendAllMessage()">給所有使用者訊息</button>
+        @if (SelectedUsers.Count > 0)
+        {
+            <button style="margin-left:10px" class="btn btn-secondary" @onclick="()=>SendSelectedMessage()">給特定使用者訊息</button>
+        }
+    </p>
+    <p class="alert alert-info">
+        @Message
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>UserName</th>
+                <th>UserEmail</th>
+                <th>LineUserId</th>
+                <th>LineNonce</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Users)
+            {
+                <tr>
+                    <td> <input type="checkbox" @onchange="eventArgs => { CheckboxClicked(user.LineUserId, eventArgs.Value); }" /></td>
+                    <td>@user.UserName</td>
+                    <td>@user.UserEmail</td>
+                    <td>
+                        @user.LineUserId
+                    </td>
+                    <td>@user.LineNonce</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(user.LineUserId))
+                        {
+                            <button class="btn btn-primary" @onclick="()=>SendMessage(user)">給單一使用者訊息</button>
+                        }
+                    </td>
+                    <td>
+                    
+                        <button class="btn btn-danger" @onclick="()=>Delete(user)">刪除使用者</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<DummyUserDto> Users;
+    string Message = "";
+    public List<string> SelectedUsers { get; set; } = new List<string>();
+    void CheckboxClicked(string userId, object checkedValue)
+    {
+        if ((bool)checkedValue)
+        {
+            if (!SelectedUsers.Contains(userId))
+            {
+                SelectedUsers.Add(userId);
+            }
+        }
+        else
+        {
+            if (SelectedUsers.Contains(userId))
+            {
+                SelectedUsers.Remove(userId);
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Users = await Http.GetFromJsonAsync<List<DummyUserDto>>("api/user/GetUsers");
+    }
+
+    private async Task SendMessage(DummyUserDto dto)
+    {
+        PushMessageRequestDto<TextMessageDto> request = new PushMessageRequestDto<TextMessageDto>();
+        request.UserId = dto.LineUserId;
+        request.Messages = new List<TextMessageDto>();
+        request.Messages.Add(new TextMessageDto { Text = "Push from Admin" });
+        await Http.PostAsJsonAsync("api/LineBot/PushMessage", request);
+        Message = "訊息已送出";
+    }
+
+
+
+    private async Task SendAllMessage()
+    {
+        BroadcastMessageRequestDto<TextMessageDto> request = new BroadcastMessageRequestDto<TextMessageDto>();
+        request.Messages = new List<TextMessageDto>();
+        request.Messages.Add(new TextMessageDto { Text = "Push from Admin to All" });
+        await Http.PostAsJsonAsync("api/LineBot/BroadcastMessage", request);
+        Message = "訊息已送出給所有人";
+    }
+
+    private async Task SendSelectedMessage()
+    {
+        MulticastMessageRequestDto<TextMessageDto> request = new MulticastMessageRequestDto<TextMessageDto>();
+        request.Messages = new List<TextMessageDto>();
+        request.Messages.Add(new TextMessageDto { Text = "Push from Admin to Selected Users" });
+        request.UserIds = new List<string>();
+        foreach (var u in SelectedUsers)
+        {
+            if (request.UserIds.Contains(u))
+                continue;
+            request.UserIds.Add(u);
+        }
+        await Http.PostAsJsonAsync("api/LineBot/BroadcastMessage", request);
+        Message = "訊息已送出給選擇的使用者";
+    }
+
+    private async Task Delete(DummyUserDto dto)
+    {
+        Users.Remove(dto);
+        await Http.PostAsJsonAsync("api/user/Delete", dto);
+        Message = "已刪除";
+    }
+}
