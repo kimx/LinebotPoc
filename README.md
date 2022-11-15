@@ -1,5 +1,8 @@
 # LinebotPoc
 Line Bot Meesage API 功能測試
+# Line 掃碼加入
+![image](https://user-images.githubusercontent.com/5724118/201879056-c55a7f46-d8d3-4c28-98d0-8af8d29ca745.png)
+
 
 # 實作功能
 * 挷定企業使用者
