@@ -88,7 +88,7 @@ public class LineBotService
                                                 Action = new ActionDto {
                                                     Type = ActionTypeEnum.Uri,
                                                     Label = "取得程式碼" ,
-                                                    Uri = "https://github.com/kimx/KimInteractiveNotebook"
+                                                    Uri = "https://github.com/kimx/LinebotPoc"
                                                 }
                                             },
                                        
