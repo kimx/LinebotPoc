@@ -20,3 +20,6 @@ Line Bot Meesage API 功能測試
 
 # 後台通知功能
 ![image](https://user-images.githubusercontent.com/5724118/201876996-435bdef0-bb5d-4070-b45f-1817b34383f1.png)
+
+# 備註
+* 主要為測試功能為主，程式碼東拼西湊而來，請小心服用....
