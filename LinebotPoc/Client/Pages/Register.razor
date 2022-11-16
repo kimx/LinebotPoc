@@ -76,6 +76,7 @@
     private DummyUserDto Model = new DummyUserDto();
     private async Task UserRegister()
     {
+        Model.UserEmail = Model.UserEmail.Trim();
         var response = await httpClient.PostAsJsonAsync("api/user/add", Model);
         if (!response.IsSuccessStatusCode)
         {

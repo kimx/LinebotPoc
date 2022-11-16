@@ -84,7 +84,7 @@ else
     private LoginDto Model = new LoginDto();
     private async Task UserLogin()
     {
-
+        Model.UserEmail = Model.UserEmail.Trim();
         var response = await httpClient.PostAsJsonAsync("api/user/login", Model);
         if (!response.IsSuccessStatusCode)
         {
