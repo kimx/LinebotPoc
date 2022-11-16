@@ -5,16 +5,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Mvc;
 using LinebotPoc.Server.Common;
+using NLog.Web;
+using LinebotPoc.Server.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+builder.WebHost.UseNLog();
 
-builder.Services.AddControllersWithViews()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.PropertyNamingPolicy = null;//保持原本的屬性名稱,大小寫不更改
-    });
 builder.Services.AddRazorPages();
 builder.Services.AddScoped(sp =>
 {
@@ -33,9 +32,15 @@ builder.Services.AddControllersWithViews(options =>
     // options.ModelBinderProviders.Insert(0, new BaseDtoBinderProvider());
     //將非null自動視為Required的設定停用,例:string Memo:預設非null，會加上[Required]
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+    options.Filters.Add<ApiExceptionFilter>();
+    options.Filters.Add<LogFilter>();
 
-});
+}).AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;//保持原本的屬性名稱,大小寫不更改
+}); ;
 
+builder.Services.AddApplicationInsightsTelemetry();
 
 
 var app = builder.Build();
