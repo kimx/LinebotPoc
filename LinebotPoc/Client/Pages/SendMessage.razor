@@ -1,0 +1,65 @@
+﻿@using System.ComponentModel.DataAnnotations;
+@if (IsShow)
+{
+    <!-- Modal -->
+    <div class="modal fade show" id="exampleModal" tabindex="-1" style="display:block" role="dialog" aria-modal="true" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">發送訊息</h5>
+                        <button type="button" class="btn-close" aria-label="Close" @onclick="Cancel"></button>
+                    </div>
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <div class="mb-3">
+                            <label for="Text">訊息</label>
+                            <InputText id="Text" class="form-control" @bind-Value="@Model.Text"></InputText>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">送出</button>
+                    </div>
+                </div>
+            </EditForm>
+
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+    <!--End Modal-->
+}
+@code {
+    private bool IsShow { get; set; } = false;
+    public SendMessageModel Model { get; set; } = new SendMessageModel();
+    private TaskCompletionSource<string> TaskSource;
+    public Task<string> Show()
+    {
+        TaskSource = new TaskCompletionSource<string>();
+        Model.Text = null;
+        IsShow = true;
+        StateHasChanged();
+        return TaskSource.Task;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        TaskSource.SetResult(Model.Text);
+        IsShow = false;
+        StateHasChanged();
+    }
+
+    private async Task Cancel()
+    {
+        TaskSource.SetResult(null);
+        IsShow = false;
+        StateHasChanged();
+
+    }
+
+   public class SendMessageModel
+    {
+        [Required]
+        public string Text { get; set; }
+    }
+}

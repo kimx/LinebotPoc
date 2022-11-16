@@ -1,10 +1,7 @@
 ﻿using LinebotPoc.Client.Providers;
-using LinebotPoc.Shared.Users;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Json;
-using System.Reflection;
-using System.Text.Json;
 
 namespace LinebotPoc.Client.Shared;
 public partial class LoginDisplay

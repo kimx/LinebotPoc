@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LinebotPoc.Shared.Users;
+namespace LinebotPoc.Shared;
 public class DummyUserDto
 {
     [Required]

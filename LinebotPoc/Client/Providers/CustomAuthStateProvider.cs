@@ -5,7 +5,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http;
-using LinebotPoc.Shared.Users;
+using LinebotPoc.Shared;
 
 namespace LinebotPoc.Client.Providers;
 //[AddAuthorization]

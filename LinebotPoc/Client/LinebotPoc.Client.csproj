@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\LineBotLibrary\LineBotLibrary.csproj" />
     <ProjectReference Include="..\Shared\LinebotPoc.Shared.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
 ﻿using LinebotPoc.Server.Domain;
-using LinebotPoc.Shared.Users;
+using LinebotPoc.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;

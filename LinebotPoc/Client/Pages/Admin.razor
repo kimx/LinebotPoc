@@ -1,14 +1,14 @@
 ﻿@page "/admin"
-@using LinebotPoc.Shared.Dtos;
-@using LinebotPoc.Shared.Users;
+@using LineBotLibrary.Dtos;
+@using LinebotPoc.Server.Common;
+@using LinebotPoc.Shared;
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize]
-@using LinebotPoc.Shared
 @inject HttpClient Http
 
 <PageTitle>使用者清單</PageTitle>
 <h1>使用者清單</h1>
-
+<SendMessage @ref="_SendMessage" />
 @if (Users == null)
 {
     <p><em>Loading...</em></p>
@@ -41,7 +41,12 @@ else
             @foreach (var user in Users)
             {
                 <tr>
-                    <td> <input type="checkbox" @onchange="eventArgs => { CheckboxClicked(user.LineUserId, eventArgs.Value); }" /></td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(user.LineUserId))
+                        {
+                            <input type="checkbox" @onchange="eventArgs => { CheckboxClicked(user.LineUserId, eventArgs.Value); }" />
+                        }
+                    </td>
                     <td>@user.UserName</td>
                     <td>@user.UserEmail</td>
                     <td>
@@ -55,7 +60,7 @@ else
                         }
                     </td>
                     <td>
-                    
+
                         <button class="btn btn-danger" @onclick="()=>Delete(user)">刪除使用者</button>
                     </td>
                 </tr>
@@ -65,6 +70,7 @@ else
 }
 
 @code {
+    private SendMessage _SendMessage;
     private List<DummyUserDto> Users;
     string Message = "";
     public List<string> SelectedUsers { get; set; } = new List<string>();
@@ -93,10 +99,13 @@ else
 
     private async Task SendMessage(DummyUserDto dto)
     {
+        string message = await _SendMessage.Show();
+        if (string.IsNullOrEmpty(message))
+            return;
         PushMessageRequestDto<TextMessageDto> request = new PushMessageRequestDto<TextMessageDto>();
         request.UserId = dto.LineUserId;
         request.Messages = new List<TextMessageDto>();
-        request.Messages.Add(new TextMessageDto { Text = "Push from Admin" });
+        request.Messages.Add(new TextMessageDto { Text = message });
         await Http.PostAsJsonAsync("api/LineBot/PushMessage", request);
         Message = "訊息已送出";
     }
@@ -105,18 +114,24 @@ else
 
     private async Task SendAllMessage()
     {
+        string message = await _SendMessage.Show();
+        if (string.IsNullOrEmpty(message))
+            return;
         BroadcastMessageRequestDto<TextMessageDto> request = new BroadcastMessageRequestDto<TextMessageDto>();
         request.Messages = new List<TextMessageDto>();
-        request.Messages.Add(new TextMessageDto { Text = "Push from Admin to All" });
+        request.Messages.Add(new TextMessageDto { Text = message });
         await Http.PostAsJsonAsync("api/LineBot/BroadcastMessage", request);
         Message = "訊息已送出給所有人";
     }
 
     private async Task SendSelectedMessage()
     {
+        string message = await _SendMessage.Show();
+        if (string.IsNullOrEmpty(message))
+            return;
         MulticastMessageRequestDto<TextMessageDto> request = new MulticastMessageRequestDto<TextMessageDto>();
         request.Messages = new List<TextMessageDto>();
-        request.Messages.Add(new TextMessageDto { Text = "Push from Admin to Selected Users" });
+        request.Messages.Add(new TextMessageDto { Text = message });
         request.UserIds = new List<string>();
         foreach (var u in SelectedUsers)
         {

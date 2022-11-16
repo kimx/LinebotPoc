@@ -1,5 +1,6 @@
 ﻿using System;
-namespace LinebotPoc.Shared.Dtos
+
+namespace LineBotLibrary.Dtos
 {
     public class BroadcastMessageRequestDto<T>
     {

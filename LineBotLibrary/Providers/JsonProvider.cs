@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace LinebotPoc.Shared.Providers
+namespace LineBotLibrary.Providers
 {
     public class JsonProvider
     {
@@ -19,6 +19,11 @@ namespace LinebotPoc.Shared.Providers
         };
 
         public string Serialize<T>(T obj)
+        {
+            return JsonSerializer.Serialize(obj, serializeOption);
+        }
+
+        public string Serialize(object obj)
         {
             return JsonSerializer.Serialize(obj, serializeOption);
         }

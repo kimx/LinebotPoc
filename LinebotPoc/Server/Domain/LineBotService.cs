@@ -1,25 +1,17 @@
-﻿using LineBotMessage.Dtos;
+﻿using LineBotLibrary.Dtos;
+using LineBotLibrary.Enum;
+using LineBotMessage.Dtos;
 using LinebotPoc.Server.Common;
-using LinebotPoc.Shared.Dtos;
-using LinebotPoc.Shared.Dtos.Messages;
-using LinebotPoc.Shared.Enum;
-using LinebotPoc.Shared.Providers;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-
 namespace LinebotPoc.Server.Domain;
 public class LineBotService
 {
     private readonly string SiteUrl = "https://linebotpoc.azurewebsites.net/";
-
-
     private UserService UserService;
-    private LineBotHelper LineBotHelper;
-    public LineBotService(UserService userService, LineBotHelper lineBotHelper)
+    private LineBotApiClient LineBotApiClient;
+    public LineBotService(UserService userService, LineBotApiClient lineBotApiClient)
     {
         UserService = userService;
-        LineBotHelper = lineBotHelper;
+        LineBotApiClient = lineBotApiClient;
     }
 
     #region  接收 webhook event 處理
@@ -136,7 +128,7 @@ public class LineBotService
 
         }
 
-        LineBotHelper.ReplyMessage(replyMessage);
+        LineBotApiClient.ReplyMessage(replyMessage);
     }
 
     #endregion
@@ -151,7 +143,7 @@ public class LineBotService
 
     private async Task ReplyBindERP(WebhookEventDto eventDto)
     {
-        var linkToken = await LineBotHelper.IssueLinkToken(eventDto);
+        var linkToken = await LineBotApiClient.IssueLinkToken(eventDto);
         var replyMessage = new ReplyMessageRequestDto<TextMessageDto>
         {
             ReplyToken = eventDto.ReplyToken,
@@ -159,13 +151,12 @@ public class LineBotService
                             {
                                 new TextMessageDto
                                 {
-                                    Type= "text",
                                     Text = $"{SiteUrl}login/{linkToken.LinkToken}"
                                 }
                             }
         };
 
-        LineBotHelper.ReplyMessage(replyMessage);
+        await LineBotApiClient.ReplyMessage(replyMessage);
     }
 
     private async Task ReplyBindERPComplete(WebhookEventDto eventDto)
@@ -184,7 +175,7 @@ public class LineBotService
                                 }
                             }
         };
-        LineBotHelper.ReplyMessage(replyMessage);
+        await LineBotApiClient.ReplyMessage(replyMessage);
     }
 
 
@@ -223,28 +214,7 @@ public class LineBotService
     }
     #endregion
 
-    #region Push Messages
-    public async Task<string> PushMessage(PushMessageRequestDto<TextMessageDto> request)
-    {
-        var result = await LineBotHelper.PushMessage(request);
-        return result;
-    }
-
-    public async Task<string> MulticastMessage(MulticastMessageRequestDto<TextMessageDto> request)
-    {
-        var result = await LineBotHelper.MulticastMessage(request);
-        return result;
-    }
-
-    public async Task<string> BroadcastMessage(BroadcastMessageRequestDto<TextMessageDto> request)
-    {
-        var result = await LineBotHelper.BroadcastMessage(request);
-        return result;
-    }
-    #endregion
-
-
-    #region ReceiveMessageWebhookEvent backup
+    #region ReplyMessageRequestDto 範例參考
     //private void ReceiveMessageWebhookEvent(WebhookEventDto eventDto)
     //{
     //    dynamic replyMessage = new ReplyMessageRequestDto<BaseMessageDto>();

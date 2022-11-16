@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace LinebotPoc.Shared.Dtos
+namespace LineBotLibrary.Dtos
 {
     public class PushMessageRequestDto<T>
     {

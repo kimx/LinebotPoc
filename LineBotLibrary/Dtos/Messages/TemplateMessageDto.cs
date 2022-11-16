@@ -1,6 +1,7 @@
-﻿using LineBotMessage.Dtos;
-using LinebotPoc.Shared.Enum;
-namespace LinebotPoc.Shared.Dtos
+﻿using LineBotLibrary.Enum;
+using LineBotMessage.Dtos;
+
+namespace LineBotLibrary.Dtos
 {
     public class TemplateMessageDto<T> : BaseMessageDto
     {

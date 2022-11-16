@@ -11,13 +11,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllersWithViews()
-    //API Controller的Json設定
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = null;//保持原本的屬性名稱,大小寫不更改
     });
 builder.Services.AddRazorPages();
-builder.Services.AddScoped<LineBotHelper>();
+builder.Services.AddScoped(sp =>
+{
+    string channelAccessToken = "";
+    LineBotApiClient lineBotApiClient = new LineBotApiClient(channelAccessToken, "");
+    return lineBotApiClient;
+});
 builder.Services.AddScoped<UserService>();
 //[auth]
 builder.Services.AddAuthentication(

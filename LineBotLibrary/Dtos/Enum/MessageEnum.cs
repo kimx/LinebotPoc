@@ -1,4 +1,4 @@
-﻿namespace LinebotPoc.Shared.Enum
+﻿namespace LineBotLibrary.Enum
 {
     public static class MessageTypeEnum
     {

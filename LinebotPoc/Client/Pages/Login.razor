@@ -1,8 +1,10 @@
 ﻿@page "/Login/{linkToken?}"
 @using LinebotPoc.Client.Providers;
-@using LinebotPoc.Shared.Users;
+@using LinebotPoc.Server.Common;
+@using LinebotPoc.Shared;
 @using Microsoft.AspNetCore.Components.Authorization;
 @using System.Text.Json;
+@inject LineBotApiClient LineBotApiClient
 
 @if (LoginFail)
 {
@@ -16,21 +18,50 @@
 }
 else
 {
-    <div class="row">
-        <div class="col-md-3 offset-md-1">
-            <EditForm Model="@Model" OnValidSubmit="@UserLogin">
-                <DataAnnotationsValidator />
-                <legend>User Login</legend>
-                <div class="mb-3">
-                    <label for="txtLoginId" class="form-label">Login Email</label>
-                    <InputText id="txtLoginId" @bind-Value="Model.UserEmail" class="form-control" />
 
-                    <ValidationMessage For="() => Model.UserEmail" />
+
+    <div class="login-page">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 offset-lg-1">
+                    <h3 class="mb-3">登入</h3>
+                    <div class="bg-white shadow rounded">
+                        <EditForm Model="@Model" OnValidSubmit="@UserLogin">
+                            <DataAnnotationsValidator />
+
+                            <div class="row">
+                                <div class="col-md-7 pe-0">
+                                    <div class="form-left h-100 py-5 px-5  ">
+                                        <div class="row g-4">
+                                            <div class="col-12">
+                                            <label for="txtLoginId" class="form-label">Login Email</label>
+                                            <InputText id="txtLoginId" @bind-Value="Model.UserEmail" class="form-control" />
+
+                                            <ValidationMessage For="() => Model.UserEmail" />
+                                        </div>
+                                        <div class="col-12 ">
+                                            <a href="/Register/@LinkToken" class="float-end text-primary  float-end">沒有帳號? 註冊一個吧</a>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-primary px-4 float-end mt-4">送出</button>
+                                        </div>
+                                   </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-5 ps-0 d-none d-md-block">
+                                    <div class="form-right h-100 bg-primary text-white text-center pt-5">
+                                        <i class="bi bi-bootstrap"></i>
+                                        <h2 class="fs-1">Welcome Back!!!</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </EditForm>
+                    </div>
+                    <p class="text-end text-secondary mt-3">Bootstrap 5 Login Page Design</p>
                 </div>
-
-                <button type="submit" class="btn btn-primary">Login</button>
-                <a href="/Register/@LinkToken" class="btn btn-secondary float-end">Register</a>
-            </EditForm>
+            </div>
         </div>
     </div>
 }
@@ -74,7 +105,7 @@ else
             var nonce = Guid.NewGuid().ToString();
             result.LineNonce = nonce;
             await httpClient.PostAsJsonAsync("api/user/update", result);
-            BindUrl = $"https://access.line.me/dialog/bot/accountLink?linkToken={LinkToken}&nonce={nonce}";
+            BindUrl = LineBotApiClient.GetAccountLinkUrl(LinkToken, nonce);
         }
 
 

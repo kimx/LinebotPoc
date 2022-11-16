@@ -1,4 +1,4 @@
-﻿using LinebotPoc.Shared.Dtos;
+﻿using LineBotLibrary.Dtos;
 
 namespace LineBotMessage.Dtos
 {

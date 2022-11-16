@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\LineBotLibrary\LineBotLibrary.csproj" />
     <ProjectReference Include="..\Client\LinebotPoc.Client.csproj" />
     <ProjectReference Include="..\Shared\LinebotPoc.Shared.csproj" />
   </ItemGroup>
