@@ -19,6 +19,11 @@
 # 後台通知功能
 ![image](https://user-images.githubusercontent.com/5724118/201876996-435bdef0-bb5d-4070-b45f-1817b34383f1.png)
 
+# 開發環境
+* Visaul Studio 2022
+* .Net Core 7
+* Blazor WebAssembly
+
 # 測試程式碼
 * 下載程式碼，你須修改如下:
 * Program.cs 修改 channelAccessToken
