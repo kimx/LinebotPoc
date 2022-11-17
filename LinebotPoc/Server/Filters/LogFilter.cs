@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace LinebotPoc.Server.Filters;
 public class LogFilter : IActionFilter
@@ -13,7 +14,15 @@ public class LogFilter : IActionFilter
     }
     public void OnActionExecuting(ActionExecutingContext context)
     {
-        _log.LogInformation($"{context.ActionDescriptor.DisplayName}");
+        try
+        {
+            string json = JsonSerializer.Serialize(context.ActionArguments);
+            _log.LogInformation($"{context.ActionDescriptor.DisplayName},{json}");
+        }
+        catch (Exception ex)
+        {
+            _log.LogDebug($"{context.ActionDescriptor.DisplayName},{ex}");
+        }
     }
 
     public void OnActionExecuted(ActionExecutedContext context)

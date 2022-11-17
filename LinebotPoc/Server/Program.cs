@@ -11,7 +11,7 @@ using LinebotPoc.Server.Filters;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+builder.Logging.ClearProviders();
 builder.WebHost.UseNLog();
 
 builder.Services.AddRazorPages();
