@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinebotPoc.Client", "Linebo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinebotPoc.Shared", "LinebotPoc\Shared\LinebotPoc.Shared.csproj", "{B52D4E35-10FA-4179-85C7-E8C3347B0777}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineBotLibrary", "LineBotLibrary\LineBotLibrary.csproj", "{3917C0B4-9D38-48CD-8DEA-4F9A4ECDBD0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LineBotLibrary", "LineBotLibrary\LineBotLibrary.csproj", "{3917C0B4-9D38-48CD-8DEA-4F9A4ECDBD0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
