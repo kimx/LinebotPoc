@@ -25,19 +25,9 @@
 * Blazor WebAssembly
 
 # 測試程式碼
-* 下載程式碼，你須修改如下:
-* Program.cs 修改 channelAccessToken
+* 下載程式碼後，你須修改appsettings.json:   
+![image](https://user-images.githubusercontent.com/5724118/202624815-706854ce-b3a3-4c13-924a-034e3f662dfc.png)
 
-  builder.Services.AddScoped(sp =>  
-  {  
-    string channelAccessToken = "你的Token";  
-    LineBotApiClient lineBotApiClient = new LineBotApiClient(channelAccessToken, "");  
-    return lineBotApiClient;  
-  });
-
-*LineBotService.cs 修改SiteUrl
-
-    private readonly string SiteUrl = "https://your site/";
 
 
 
