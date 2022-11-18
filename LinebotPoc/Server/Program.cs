@@ -9,7 +9,7 @@ using NLog.Web;
 using LinebotPoc.Server.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddEnvironmentVariables("Kim__LinePoc__");//環境變數
+builder.Configuration.AddEnvironmentVariables("Kim__LinePoc__");//本機環境變數前置詞
 // Add services to the container.
 builder.Logging.ClearProviders();
 builder.WebHost.UseNLog();
