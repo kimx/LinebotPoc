@@ -26,7 +26,11 @@
 
 # 測試程式碼
 * 下載程式碼後，你須修改appsettings.json:   
-![image](https://user-images.githubusercontent.com/5724118/202624815-706854ce-b3a3-4c13-924a-034e3f662dfc.png)
+![image](https://user-images.githubusercontent.com/5724118/202625043-06301e7a-be5d-4e03-84f2-fb8fcd3d2eef.png)
+
+* 另外2個為ApplicationInsights的設定(選填):
+  * ConnectionString
+  * InstrumentationKey
 
 
 
