@@ -5,11 +5,12 @@ using LinebotPoc.Server.Common;
 namespace LinebotPoc.Server.Domain;
 public class LineBotService
 {
-    private readonly string SiteUrl = "https://linebotpoc.azurewebsites.net/";
+    private readonly string SiteUrl = "";
     private UserService UserService;
     private LineBotApiClient LineBotApiClient;
-    public LineBotService(UserService userService, LineBotApiClient lineBotApiClient)
+    public LineBotService(UserService userService, LineBotApiClient lineBotApiClient,string siteUrl)
     {
+        SiteUrl= siteUrl;
         UserService = userService;
         LineBotApiClient = lineBotApiClient;
     }

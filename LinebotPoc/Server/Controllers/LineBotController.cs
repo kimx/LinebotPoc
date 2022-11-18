@@ -12,12 +12,13 @@ namespace LinebotPoc.Server.Controllers
         private readonly LineBotService _lineBotService;
         private readonly LineBotApiClient _lineBotApiClient;
         // constructor
-        public LineBotController(UserService userService, LineBotApiClient lineBotApiClient)
+        public LineBotController(UserService userService, LineBotApiClient lineBotApiClient, IHttpContextAccessor httpContextAccessor)
         {
-            _lineBotService = new LineBotService(userService, lineBotApiClient);
+            string siteUrl = $"{httpContextAccessor.HttpContext.Request.Scheme}://{httpContextAccessor.HttpContext.Request.Host.Value}/";
+            _lineBotService = new LineBotService(userService, lineBotApiClient, siteUrl);
             _lineBotApiClient = lineBotApiClient;
         }
-
+      
         //https://linebotpoc.azurewebsites.net/api/LineBot/Webhook
         [HttpPost("Webhook")]
         public Task Webhook(WebhookRequestBodyDto body)

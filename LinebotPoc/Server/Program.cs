@@ -9,7 +9,7 @@ using NLog.Web;
 using LinebotPoc.Server.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Configuration.AddEnvironmentVariables("Kim__LinePoc__");//環境變數
 // Add services to the container.
 builder.Logging.ClearProviders();
 builder.WebHost.UseNLog();
@@ -17,7 +17,7 @@ builder.WebHost.UseNLog();
 builder.Services.AddRazorPages();
 builder.Services.AddScoped(sp =>
 {
-    string channelAccessToken = "";
+    string channelAccessToken = builder.Configuration["ChannelAccessToken"];
     LineBotApiClient lineBotApiClient = new LineBotApiClient(channelAccessToken, "");
     return lineBotApiClient;
 });
@@ -41,6 +41,7 @@ builder.Services.AddControllersWithViews(options =>
 }); ;
 
 builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 
 var app = builder.Build();

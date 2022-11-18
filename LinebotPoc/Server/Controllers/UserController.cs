@@ -15,9 +15,11 @@ namespace LinebotPoc.Server.Controllers
     public class UserController : ControllerBase
     {
         UserService UserService;
-        public UserController(UserService userService)
+        IConfiguration Configuration;
+        public UserController(UserService userService, IConfiguration configuration)
         {
             this.UserService = userService;
+            this.Configuration = configuration;
         }
 
         #region Login相關
@@ -103,6 +105,16 @@ namespace LinebotPoc.Server.Controllers
         {
             UserService.Delete(userDto);
             return Ok();
+        }
+
+        //Test Config
+        [HttpGet("TestConfig")]
+        public string[] TestConfig()
+        {
+            return new string[] { 
+                  Configuration["ChannelAccessToken"]
+                , Configuration["InstrumentationKey"]
+                 ,Configuration["ApplicationInsights:ConnectionString"]};
         }
     }
 }
