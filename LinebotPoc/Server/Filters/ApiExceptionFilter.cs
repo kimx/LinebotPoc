@@ -15,9 +15,7 @@ public class ApiExceptionFilter : IExceptionFilter
 
     public void OnException(ExceptionContext context)
     {
-        _log.LogWarning("[EXW]:"+ context.Exception.Message);
-        _log.LogError(context.Exception, "[EX]:"+ context.Exception.Message);
-        _log.LogInformation("[EXI]:"+ context.Exception.Message);
+        _log.LogError(context.Exception, context.Exception.Message);
 
 
     }
