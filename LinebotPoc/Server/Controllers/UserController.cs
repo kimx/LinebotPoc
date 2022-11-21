@@ -14,9 +14,9 @@ namespace LinebotPoc.Server.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        UserService UserService;
+        IUserService UserService;
         IConfiguration Configuration;
-        public UserController(UserService userService, IConfiguration configuration)
+        public UserController(IUserService userService, IConfiguration configuration)
         {
             this.UserService = userService;
             this.Configuration = configuration;
@@ -81,37 +81,33 @@ namespace LinebotPoc.Server.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<IActionResult> Add(DummyUserDto userDto)
+        public Task Add(DummyUserDto userDto)
         {
             var find = UserService.GetUser(userDto.UserEmail);
             if (find != null)
             {
                 throw new Exception("使用者已存在");
             }
-            UserService.Update(userDto);
-            await LoginAsync(new LoginDto { UserEmail = userDto.UserEmail });
-            return Ok();
+            return UserService.Create(userDto);
         }
 
         [HttpPost("Update")]
-        public IActionResult Update(DummyUserDto userDto)
+        public Task Update(DummyUserDto userDto)
         {
-            UserService.Update(userDto);
-            return Ok();
+            return UserService.Update(userDto);
         }
 
         [HttpPost("Delete")]
-        public IActionResult Delete(DummyUserDto userDto)
+        public Task Delete(DummyUserDto userDto)
         {
-            UserService.Delete(userDto);
-            return Ok();
+            return UserService.Delete(userDto);
         }
 
         //Test Config
         [HttpGet("TestConfig")]
         public string[] TestConfig()
         {
-            return new string[] { 
+            return new string[] {
                   Configuration["ChannelAccessToken"]
                 , Configuration["InstrumentationKey"]
                  ,Configuration["ApplicationInsights:ConnectionString"]};

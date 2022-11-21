@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using LinebotPoc.Server.Common;
 using NLog.Web;
 using LinebotPoc.Server.Filters;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables("Kim__LinePoc__");//本機環境變數前置詞
@@ -17,11 +19,18 @@ builder.WebHost.UseNLog();
 builder.Services.AddRazorPages();
 builder.Services.AddScoped(sp =>
 {
-    string channelAccessToken = builder.Configuration["ChannelAccessToken"];
-    LineBotApiClient lineBotApiClient = new LineBotApiClient(channelAccessToken, "");
+    LineBotApiClient lineBotApiClient = new LineBotApiClient(builder.Configuration["ChannelAccessToken"], "");
     return lineBotApiClient;
 });
-builder.Services.AddScoped<UserService>();
+string azureCosmosConnectionString = builder.Configuration["AzureCosmosConnectionString"];
+if (!string.IsNullOrEmpty(azureCosmosConnectionString))
+{
+    builder.Services.AddSingleton<IUserService, CosmosUserService>();
+}
+else
+    builder.Services.AddSingleton<IUserService, FileUserService>();
+
+
 //[auth]
 builder.Services.AddAuthentication(
     CookieAuthenticationDefaults.AuthenticationScheme
@@ -72,4 +81,10 @@ app.MapFallbackToFile("index.html");
 //[auth]
 app.UseAuthentication();
 app.UseAuthorization();
+
+if (!string.IsNullOrEmpty(azureCosmosConnectionString))
+{
+    await app.Services.GetRequiredService<IUserService>().InitAsync(azureCosmosConnectionString);
+}
 app.Run();
+

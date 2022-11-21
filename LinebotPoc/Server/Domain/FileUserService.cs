@@ -5,21 +5,28 @@ using System.Text.Json;
 
 namespace LinebotPoc.Server.Domain
 {
-    public class UserService
+    public class FileUserService : IUserService
     {
         IWebHostEnvironment HostEnvironment;
-        public UserService(IWebHostEnvironment hostEnvironment)
+        public FileUserService(IWebHostEnvironment hostEnvironment)
         {
             this.HostEnvironment = hostEnvironment;
-        }
-        public void Update(DummyUserDto userDto)
-        {
-            string json = JsonSerializer.Serialize(userDto);
             string dir = Path.Combine(HostEnvironment.WebRootPath, "Data");
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
+        }
+
+        public Task Create(DummyUserDto userDto)
+        {
+            return this.Update(userDto);
+        }
+
+        public Task Update(DummyUserDto userDto)
+        {
+            string json = JsonSerializer.Serialize(userDto);
+            string dir = Path.Combine(HostEnvironment.WebRootPath, "Data");
             string filePath = Path.Combine(dir, userDto.UserEmail + ".json");
             using (var file = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
@@ -28,6 +35,7 @@ namespace LinebotPoc.Server.Domain
                     writer.Write(json);
                 }
             }
+            return Task.CompletedTask;
 
         }
 
@@ -80,13 +88,17 @@ namespace LinebotPoc.Server.Domain
             return null;
         }
 
-        public void Delete(DummyUserDto userDto)
+        public Task Delete(DummyUserDto userDto)
         {
             string filePath = Path.Combine(HostEnvironment.WebRootPath, "Data", userDto.UserEmail + ".json");
             if (File.Exists(filePath))
                 File.Delete(filePath);
-
+            return Task.CompletedTask;
         }
 
+        public Task InitAsync(string connectionString)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

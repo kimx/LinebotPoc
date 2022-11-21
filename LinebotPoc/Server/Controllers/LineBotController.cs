@@ -12,7 +12,7 @@ namespace LinebotPoc.Server.Controllers
         private readonly LineBotService _lineBotService;
         private readonly LineBotApiClient _lineBotApiClient;
         // constructor
-        public LineBotController(UserService userService, LineBotApiClient lineBotApiClient, IHttpContextAccessor httpContextAccessor)
+        public LineBotController(FileUserService userService, LineBotApiClient lineBotApiClient, IHttpContextAccessor httpContextAccessor)
         {
             string siteUrl = $"{httpContextAccessor.HttpContext.Request.Scheme}://{httpContextAccessor.HttpContext.Request.Host.Value}/";
             _lineBotService = new LineBotService(userService, lineBotApiClient, siteUrl);
