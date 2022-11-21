@@ -6,9 +6,9 @@ namespace LinebotPoc.Server.Domain;
 public class LineBotService
 {
     private readonly string SiteUrl = "";
-    private FileUserService UserService;
+    private IUserService UserService;
     private LineBotApiClient LineBotApiClient;
-    public LineBotService(FileUserService userService, LineBotApiClient lineBotApiClient,string siteUrl)
+    public LineBotService(IUserService userService, LineBotApiClient lineBotApiClient,string siteUrl)
     {
         SiteUrl= siteUrl;
         UserService = userService;
