@@ -8,9 +8,9 @@ public class LineBotService
     private readonly string SiteUrl = "";
     private IUserService UserService;
     private LineBotApiClient LineBotApiClient;
-    public LineBotService(IUserService userService, LineBotApiClient lineBotApiClient,string siteUrl)
+    public LineBotService(IUserService userService, LineBotApiClient lineBotApiClient, string siteUrl)
     {
-        SiteUrl= siteUrl;
+        SiteUrl = siteUrl;
         UserService = userService;
         LineBotApiClient = lineBotApiClient;
     }
@@ -29,7 +29,7 @@ public class LineBotService
             {
                 case WebhookEventTypeEnum.Message:
                     if (eventObject.Message.Type == MessageTypeEnum.Text)
-                        ReceiveMessageWebhookEvent(eventObject);
+                        await ReceiveMessageWebhookEvent(eventObject);
                     //TODO: Other : 圖片、連結、聲音
                     break;
 
@@ -46,14 +46,14 @@ public class LineBotService
                     }
                     break;
                 case WebhookEventTypeEnum.Follow:
-                    ReceiveMessageWebhookEvent(eventObject);
+                    await ReceiveMessageWebhookEvent(eventObject);
                     break;
 
             }
         }
     }
 
-    private void ReceiveMessageWebhookEvent(WebhookEventDto eventDto)
+    private Task<string> ReceiveMessageWebhookEvent(WebhookEventDto eventDto)
     {
         dynamic replyMessage = new ReplyMessageRequestDto<BaseMessageDto>();
         if (!IsBindUser(eventDto))
@@ -129,7 +129,7 @@ public class LineBotService
 
         }
 
-        LineBotApiClient.ReplyMessage(replyMessage);
+        return LineBotApiClient.ReplyMessage(replyMessage);
     }
 
     #endregion
