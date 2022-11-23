@@ -1,4 +1,5 @@
 ﻿using LineBotLibrary.Dtos;
+using LineBotLibrary.Dtos.Messages;
 using LineBotLibrary.Enum;
 using LineBotMessage.Dtos;
 using LinebotPoc.Server.Common;
@@ -37,6 +38,10 @@ public class LineBotService
                     if (eventObject.Postback.Data == "BindERP")
                     {
                         await ReplyBindERP(eventObject);
+                    }
+                    else if (eventObject.Postback.Data == "Profile")
+                    {
+                        await ReplyProfile(eventObject);
                     }
                     break;
                 case WebhookEventTypeEnum.AccountLink:
@@ -84,7 +89,14 @@ public class LineBotService
                                                     Uri = "https://github.com/kimx/LinebotPoc"
                                                 }
                                             },
-                                       
+                                            // Postback個人資訊
+                                            new QuickReplyButtonDto {
+                                                Action = new ActionDto {
+                                                    Type = ActionTypeEnum.Postback,
+                                                    Label = "個人資訊",
+                                                    Data="Profile",
+                                                }
+                                            },
                                             // camera action
                                             new QuickReplyButtonDto {
                                                 Action = new ActionDto {
@@ -214,6 +226,43 @@ public class LineBotService
         return replyMessage;
     }
     #endregion
+
+    private async Task ReplyProfile(WebhookEventDto eventDto)
+    {
+        var profileDto = await LineBotApiClient.GetUserProfile(eventDto.Source.UserId);
+        var replyMessage = new ReplyMessageRequestDto<TemplateMessageDto<ImageCarouselTemplateDto>>
+        {
+            ReplyToken = eventDto.ReplyToken,
+            Messages = new List<TemplateMessageDto<ImageCarouselTemplateDto>>
+                    {
+                        new TemplateMessageDto<ImageCarouselTemplateDto>
+                        {
+                            AltText =$"您的顯示名稱 {profileDto.DisplayName}",
+                            Template = new ImageCarouselTemplateDto
+                            {
+                                Columns = new List<ImageCarouselColumnObjectDto>
+                                {
+                                    new ImageCarouselColumnObjectDto
+                                    {
+                                        ImageUrl = profileDto.PictureUrl,
+                                        //一定要有Action
+                                        Action = new ActionDto
+                                        {
+                                            Type = ActionTypeEnum.Uri,
+                                            Label =$"您的顯示名稱 {profileDto.DisplayName}",
+                                            Uri = profileDto.PictureUrl,
+                                        }
+                                    },
+                                 
+
+                                }
+                            }
+                        }
+                    }
+        };
+
+        await LineBotApiClient.ReplyMessage(replyMessage);
+    }
 
     #region ReplyMessageRequestDto 範例參考
     //private void ReceiveMessageWebhookEvent(WebhookEventDto eventDto)

@@ -1,4 +1,5 @@
 using LineBotLibrary.Dtos;
+using LineBotLibrary.Dtos.Profile;
 using LinebotPoc.Server.Common;
 using LinebotPoc.Server.Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace LinebotPoc.Server.Controllers
             _lineBotService = new LineBotService(userService, lineBotApiClient, siteUrl);
             _lineBotApiClient = lineBotApiClient;
         }
-      
+
         //https://linebotpoc.azurewebsites.net/api/LineBot/Webhook
         [HttpPost("Webhook")]
         public Task Webhook(WebhookRequestBodyDto body)
@@ -47,6 +48,13 @@ namespace LinebotPoc.Server.Controllers
         {
             var result = _lineBotApiClient.BroadcastMessage(request);
             return result;
+        }
+
+        [HttpGet("GetUserProfile/{userId}")]
+        public Task<UserProfileDto> GetUserProfile(string userId)
+        {
+            return _lineBotApiClient.GetUserProfile(userId);
+
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using LineBotLibrary.Dtos;
 using LineBotLibrary.Dtos.Messages;
+using LineBotLibrary.Dtos.Profile;
 using LineBotLibrary.Enum;
 using LineBotLibrary.Providers;
 using LineBotMessage.Dtos;
+using System;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
@@ -20,9 +22,12 @@ public class LineBotApiClient
     #endregion
 
     #region Line API Url
+    private readonly string GetUserProfileUri = "https://api.line.me/v2/bot/profile/{0}";
+
     private readonly string ReplyMessageUri = "https://api.line.me/v2/bot/message/reply";
     //1對全部
     private readonly string BroadcastMessageUri = "https://api.line.me/v2/bot/message/broadcast";
+
     //1對多 最多150
     private readonly string MulticastMessageUri = "https://api.line.me/v2/bot/message/multicast";
     //1對1
@@ -63,14 +68,34 @@ public class LineBotApiClient
         return content;
     }
 
-    private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage requestMessage)
+
+    private async Task<string> SendAsync(HttpRequestMessage requestMessage)
     {
         var response = await client.SendAsync(requestMessage);
-        return response;
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStringAsync();
+        return content;
     }
 
 
     #endregion
+
+    /// <summary>
+    /// 取得使用者基本資訊
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="request"></param>
+    public async Task<UserProfileDto> GetUserProfile(string userId)
+    {
+        var requestMessage = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(string.Format(GetUserProfileUri, userId))
+        };
+        var content = await SendAsync(requestMessage);
+        var profile = _jsonProvider.Deserialize<UserProfileDto>(content);
+        return profile;
+    }
 
     #region Account Link
     public string GetAccountLinkUrl(string linkToken, string nonce)
@@ -190,7 +215,6 @@ public class LineBotApiClient
         var content = await SendAsync(BroadcastMessageUri, request);
         return content;
     }
-
     #endregion
 }
 
