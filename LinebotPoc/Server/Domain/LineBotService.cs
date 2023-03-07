@@ -124,6 +124,22 @@ public class LineBotService
                             }
                 };
             }
+            else if (eventDto.Message.Text.StartsWith("/ai:"))
+            {
+                var text = eventDto.Message.Text.Replace("/ai:", "");
+                var gptResult = ChatGPT.CallChatGPT(text).choices[0].message.content;
+                replyMessage = new ReplyMessageRequestDto<TextMessageDto>
+                {
+                    ReplyToken = eventDto.ReplyToken,
+                    Messages = new List<TextMessageDto>
+                            {
+                                new TextMessageDto
+                                {
+                                    Text = gptResult,
+                                }
+                            }
+                };
+            }
             else
             {
                 replyMessage = new ReplyMessageRequestDto<TextMessageDto>
@@ -133,7 +149,7 @@ public class LineBotService
                             {
                                 new TextMessageDto
                                 {
-                                    Text = "您已挷定成功，使用其它功能，請輸入: /help",
+                                    Text = "您已挷定成功，使用其它功能，請輸入: /help 或 /ai:詢問內容",
                                 }
                             }
                 };
@@ -253,7 +269,7 @@ public class LineBotService
                                             Uri = profileDto.PictureUrl,
                                         }
                                     },
-                                 
+
 
                                 }
                             }
