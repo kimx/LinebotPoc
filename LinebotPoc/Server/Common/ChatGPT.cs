@@ -12,7 +12,9 @@ public class ChatGPT
     {
         HttpClient client = new HttpClient();
         string uri = "https://api.openai.com/v1/chat/completions";
-
+        msg = msg.Replace("\r", "");
+        msg = msg.Replace("\n", "");
+        msg = msg.Replace(" ", "");
         // Request headers.
         client.DefaultRequestHeaders.Add(
             "Authorization", $"Bearer {OpenApiKey}");
@@ -25,7 +27,10 @@ public class ChatGPT
             ".Replace("question", msg);
         var content = new StringContent(JsonString, Encoding.UTF8, "application/json");
         var response = client.PostAsync(uri, content).Result;
+
         var JSON = response.Content.ReadAsStringAsync().Result;
+        if (!response.IsSuccessStatusCode)
+            throw new HttpRequestException(JSON);
         return JsonSerializer.Deserialize<Result>(JSON);
     }
 }

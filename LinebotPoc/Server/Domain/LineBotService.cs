@@ -127,18 +127,38 @@ public class LineBotService
             else if (eventDto.Message.Text.StartsWith("/ai:"))
             {
                 var text = eventDto.Message.Text.Replace("/ai:", "");
-                var gptResult = ChatGPT.CallChatGPT(text).choices[0].message.content;
-                replyMessage = new ReplyMessageRequestDto<TextMessageDto>
+                try
                 {
-                    ReplyToken = eventDto.ReplyToken,
-                    Messages = new List<TextMessageDto>
+                    var msgs = ChatGPT.CallChatGPT(text).choices.Select(o => o.message.content).ToArray();
+                    var gptResult = string.Join("\r\n", msgs);
+                    replyMessage = new ReplyMessageRequestDto<TextMessageDto>
+                    {
+                        ReplyToken = eventDto.ReplyToken,
+                        Messages = new List<TextMessageDto>
                             {
                                 new TextMessageDto
                                 {
                                     Text = gptResult,
                                 }
                             }
-                };
+                    };
+                }
+                catch (Exception ex)
+                {
+
+                    replyMessage = new ReplyMessageRequestDto<TextMessageDto>
+                    {
+                        ReplyToken = eventDto.ReplyToken,
+                        Messages = new List<TextMessageDto>
+                            {
+                                new TextMessageDto
+                                {
+                                    Text = "[Text]:"+text+"/r/n [AI-Error]:"+ex,
+                                }
+                            }
+                    };
+                }
+
             }
             else
             {
